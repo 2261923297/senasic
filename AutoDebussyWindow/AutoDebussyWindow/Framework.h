@@ -32,8 +32,6 @@ protected:
 	std::string							m_config_file;
 };
 
-
-
 class AutoDebussy {
 public:
 	AutoDebussy();

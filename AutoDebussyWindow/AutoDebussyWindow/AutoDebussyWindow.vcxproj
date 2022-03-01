@@ -109,22 +109,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="File.cpp" />
+    <ClCompile Include="BoardController.cpp" />
+    <ClCompile Include="CMW500Controller.cpp" />
     <ClCompile Include="Framework.cpp" />
+    <ClCompile Include="HandleComFrame.cpp" />
+    <ClCompile Include="N900Controller.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="tools.cpp" />
     <QtRcc Include="AutoDebussyWindow.qrc" />
     <QtUic Include="AutoDebussyWindow.ui" />
     <QtMoc Include="AutoDebussyWindow.h" />
-    <ClCompile Include="AutoDebussy.cpp" />
     <ClCompile Include="AutoDebussyWindow.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AutoDebussy.h" />
-    <ClInclude Include="File.h" />
+    <ClInclude Include="BoardController.h" />
+    <ClInclude Include="CMW500Controller.h" />
     <ClInclude Include="Framework.h" />
+    <ClInclude Include="HandleComFrame.h" />
     <ClInclude Include="HandleError.h" />
+    <ClInclude Include="N900Controller.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="structure.h" />
     <ClInclude Include="tools.h" />
