@@ -5,6 +5,7 @@
 #include "HandleComFrame.h"
 #include "CMW500Controller.h"
 #include "N900Controller.h"
+#include "tools.h"
 
 #include <memory>  
 #include <vector> 
@@ -14,8 +15,6 @@
 #include <QtSerialPort/QSerialPortInfo>
 
  
-
-using namespace tt::framework;
 
 namespace senasic {
 namespace sw {
@@ -40,6 +39,12 @@ public:
 	void set_wait_time(uint32_t time = 100) { m_wait_time = time; }
 	void set_cur_config(const config_t& config) { m_curr_config = config; }
 	
+	void set_ad(AutoDebussy* ad) override { 
+		__logger_debug << str_val(ad) << "\n";
+		m_ad = ad;
+		m_hcf.set_ad(ad); 
+	}
+
 	void test_set();
 	int parse_frame(const uint8_t* frame, size_t len);
 	void print_configs();

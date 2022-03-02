@@ -12,7 +12,7 @@
 #include <qdebug.h>
 #include <qobject.h>
 
-using namespace tt::framework;
+
 
 namespace senasic {
 namespace sw {
@@ -39,7 +39,7 @@ void BoardController::test_set()
 		__logger_debug << str_val(i) << str_val(size) << "\n";
 		if (i == 2) {
 			__logger_debug << "getting...";
-			set_wait_time(1000);
+			set_wait_time(800);
 		}
 		std::cout << "current cmd: " << std::endl;
 		print_qbytearray(*it);
@@ -51,6 +51,7 @@ void BoardController::test_set()
 	}
 	return;
 }
+
 BoardController::BoardController
 (const std::string& config_file, const std::string& board_com)
 {
@@ -78,10 +79,11 @@ int BoardController::get_cur_config()
 	if (m_configs.empty()) { return 0; }						// 板子配置结束
 	auto qa = m_configs.front();
 
-	g_board_config_name = std::get<0>(qa);
+	set_board_config_name(std::get<0>(qa));
+	m_ad->set_save_file_name(g_rest_root + std::get<0>(qa) + '\\');
 	if (g_board_config_name.back() == '\r')
 		g_board_config_name.pop_back();
-	std::cout << "g_board_config_name" << g_board_config_name << std::endl;
+//	std::cout << "g_board_config_name" << g_board_config_name << std::endl;
 	m_curr_config = qa;
 
 	m_configs.pop_front();
@@ -101,29 +103,28 @@ int BoardController::get()
 		if (tmp_qa.size() <= 0) {
 			break;
 		}
+		// __logger_debug << "\nwhat recv: " << std::endl;
+		// print_qbytearray(tmp_qa);
 		m_read_buf.push_back(tmp_qa);
 	} while (1);
 	const ComSt* cs = (const ComSt*)m_read_buf.constData();
 
-	////__logger_debug << "\nwhat recv: ";
+	//__logger_debug << "nRecv = " << nRead << std::endl;
+	//__logger_debug << "\nwhat recv: " << std::endl;
 	//print_qbytearray(m_read_buf);
-
 	m_com->flush();
 	int nRead = m_read_buf.size();
 	if (nRead > 0) {
-		//		print_qbytearray(m_read_buf);
-		//		printf("\n\n\n");
-				//__logger_debug << "nRecv = " << nRead << std::endl;
 		parse_frame(
 			(uint8_t*)m_read_buf.constData()
 			, m_read_buf.size());
 		//__logger_debug << str_val(nWriteToFile) << std::endl;
-//		printf("\n\n\n");
 	}
 	else {
 		__logfmt_error("com %s cant read data\n", (char*)m_com->portName().data());
 		return -1;															// 不能读
 	}
+
 	m_read_buf.clear();
 	return 1;
 }
@@ -131,7 +132,6 @@ int BoardController::get()
 // only get curr_config
 int BoardController::set() {
 	auto it = std::get<1>(m_curr_config).begin();
-	auto sleep_key = std::get<1>(m_curr_config).end()--;
 	int size = std::get<1>(m_curr_config).size();
 	int i = 0;
 	while (it != std::get<1>(m_curr_config).end())
@@ -146,24 +146,24 @@ int BoardController::set() {
 			return -1;
 		}
 
-		__logger_debug << str_val(i) << str_val(size) << "\n";
+		
+		__logger_debug << str_val(i) << ", " <<  str_val(size) << "\n";
 		if (i == 0) {
 			__logger_debug << "sleeping...";
 			set_wait_time(100);
 			Sleep(1000);
 
-			std::cout << "current cmd: " << std::endl;
+			std::cout << "current cmd: ";
 			print_qbytearray(*it);
 			it++;
 			i++;
 			continue;
 		}
-
-		if (i == 3) {
-			__logger_debug << "getting...";
-			set_wait_time(1000);
+		if (i == size - 1) {
+			__logger_debug << "getting...\n";
+			set_wait_time(800);
 		}
-		std::cout << "current cmd: " << std::endl;
+		__logger_debug << "current cmd: ";
 		print_qbytearray(*it);
 		if (-1 == get()) {
 			continue;
@@ -187,29 +187,6 @@ int BoardController::get_ok(uint8_t len, const uint8_t* data_beg) {
 	return len;
 }
 
-int BoardController::get_data(uint8_t len, const uint8_t* data_beg) {
-	//	//__logger_debug << "len = " << (int)len << ": ";
-	//	for (int i = 0; i < len; i++) {
-	//		printf("%2x ", data_beg[i]);
-	//	}
-
-	m_rest_file = g_rest_root + g_board_config_name + '\\' + g_fre_level + ".txt";
-	FILE* pFile = fopen(m_rest_file.c_str(), "ab+");
-	if (pFile == nullptr) {
-		fprintf(stderr, "can^t open file %s\n", m_rest_file.c_str());
-		return -1;
-	}
-	fwrite(data_beg + sizeof(DATA_PKG), 1, len, pFile);
-
-	fwrite("\n", 1, 1, pFile);
-	fflush(pFile);
-	return m_read_buf.size();
-}
-
-
-
-
-
 int BoardController::parse_frame(const uint8_t* frame, size_t len) {
 	const ComSt* cs = nullptr;
 	size_t pos = 0;
@@ -217,8 +194,9 @@ int BoardController::parse_frame(const uint8_t* frame, size_t len) {
 	int frame_len = 0;
 	while (pos < len) {
 
+
 		cs = (const ComSt*)(frame + pos);
-		frame_len = cs->len + sizeof(*cs);
+		frame_len = cs->len + sizeof(ComSt);
 		memcpy(frame_tmp, cs, frame_len);
 		// check
 		m_hcf.handle_frame(frame_tmp, frame_len);				// handle	
@@ -293,7 +271,7 @@ BoardController::config_t BoardController::framing(const char* buf) {
 		pos = tmp_buf.find_first_of('\n', pos + 1);
 	}
 	tmp_buf.push_back(tmp_buf.size());
-	std::get<0>(rt) = tmp_buf.substr(lens_pos[0], lens_pos[1]);
+	std::get<0>(rt) = tmp_buf.substr(lens_pos[0], lens_pos[1] - 1);
 
 	auto& frams = std::get<1>(rt);
 	for (int i = 2; i < lens_pos.size(); i++) {

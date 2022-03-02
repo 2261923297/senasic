@@ -15,7 +15,7 @@
 
 #pragma comment(lib, "ws2_32.lib") 
 
-using namespace tt::framework;
+// using namespace framework;
 
 namespace senasic {
 namespace sw {
@@ -32,7 +32,6 @@ public:
 	virtual ~CMW500Controller() {
 		printf("CMW500Controller delete\n");
 	}
-
 	virtual int set() override;
 	virtual int get() override;
 	virtual int read_config_from_file(const std::string& file) override;
@@ -40,6 +39,8 @@ public:
 private:
 	std::vector<config_t>  m_configs;
 	size_t m_config_cur;
+	
+	
 };
 
 

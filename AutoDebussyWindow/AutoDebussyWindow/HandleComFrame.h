@@ -23,9 +23,10 @@ public:
 
 	void set_func_code(size_t fc) { m_func_code = fc; }
 	size_t get_func_code() const { return m_func_code; }
-
+	void set_ad(AutoDebussy* ad) { m_ad = ad; }
 protected:
 	size_t m_func_code;
+	AutoDebussy* m_ad;
 };
 
 class RSPComFrameWorker : public ComFrameWorker {
@@ -58,7 +59,7 @@ class HandleComFrame {
 public:
 	HandleComFrame();
 	~HandleComFrame();
-
+	void set_ad(AutoDebussy* ad);
 	int handle_frame
 	(const uint8_t* frame, size_t frame_len);
 private:

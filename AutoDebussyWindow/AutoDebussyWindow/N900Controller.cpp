@@ -12,7 +12,6 @@
 #include <qdebug.h>
 #include <qobject.h>
 
-using namespace tt::framework;
 
 namespace senasic {
 namespace sw {

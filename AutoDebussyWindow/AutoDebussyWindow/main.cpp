@@ -8,7 +8,6 @@
 #include "Framework.h"
 
 using namespace senasic::sw::tt;
-using namespace tt::framework;
 
 void test_define_log() {
 //    __logger_error << "hello logger!" << std::endl;
@@ -58,7 +57,7 @@ void test_port() {
     
     bc.set_cur_config(single_config);
     */
-    bc.test_set();
+    bc.set();
     return;
 }
 
@@ -71,9 +70,9 @@ int main(int argc, char *argv[])
     // test_port();
     // printf("\ncd\n");
     uint64_t time_cost = 0;
-    test_port();
-    //func_excute_time(Auto, time_cost);
-    __logger_debug << str_val(time_cost) << std::endl;
+    // test_port();
+    func_excute_time(Auto, time_cost);
+    //__logger_debug << str_val(time_cost) << std::endl;
 
     // w.show();
     destory_win_network();

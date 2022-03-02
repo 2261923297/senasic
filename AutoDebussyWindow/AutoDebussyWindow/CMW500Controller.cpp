@@ -1,5 +1,4 @@
 #include "CMW500Controller.h"
-using namespace tt::framework;
 
 namespace senasic {
 namespace sw {
@@ -42,11 +41,12 @@ int CMW500Controller::set()
 		= "SOURce:GPRF:GENerator:RFSettings:LEVEl "
 		+ levle
 		+ "\n";
-
+/*
 	if (levle[0] == '-') {
 		levle[0] = 'n';
 	}
-	g_fre_level = fre + "_" + levle + ".txt";
+*/
+	m_ad->set_file_name(fre + "_" + levle + ".txt");
 
 	if (false == m_sock->send(cmd_frequence)) { return -1; }
 	if (false == m_sock->send(cmd_level)) { return -1; }

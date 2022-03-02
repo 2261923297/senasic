@@ -1,5 +1,6 @@
 #include "HandleComFrame.h"
 #include "AutoDebussy.h"
+
 #include "tools.h"
 #include "structure.h"
 
@@ -11,7 +12,7 @@ namespace sw {
 namespace tt {
 int RSPComFrameWorker::work(const uint8_t* data, size_t len)
 {
-	//__logger_debug << "\nget_rsp, len = " << len << ": ";
+	__logger_debug << "get_rsp, len = " << len << ": ";
 	for (int i = 0; i < len; i++) {
 		printf("%2x, ", (unsigned char)data[i]);
 	}
@@ -38,7 +39,9 @@ int DataComFrameWorker::work(const uint8_t* data, size_t len)
 	//__logfmt_debug("all_pkg_num = %d, cur_pkg_seq = %d, crc = 0x%x", dp.pkg_num, dp.pkg_seq, crc);
 
 	if (dp.pkg_seq == 1) {
-		m_file_name = g_rest_root + g_board_config_name + "\\" + g_fre_level;
+		m_file_name = m_ad->m_save_file_name + m_ad->m_file_name;
+		__logger_debug << "save_to_file: " << m_file_name << std::endl;
+		
 		m_p_file = fopen(m_file_name.c_str(), "ab+");
 		if (m_p_file == nullptr) {
 			__logger_error << "cant open file " << m_file_name
@@ -48,7 +51,8 @@ int DataComFrameWorker::work(const uint8_t* data, size_t len)
 	}
 
 	nWriteToFile += fwrite(data + sizeof(DATA_PKG), 1, len - 6, m_p_file);
-	
+	fflush(m_p_file);
+
 	if (dp.pkg_seq == dp.pkg_num) {
 		if (m_p_file != nullptr)
 			fclose(m_p_file);
@@ -58,12 +62,11 @@ int DataComFrameWorker::work(const uint8_t* data, size_t len)
 	return 0;
 }
 
-
-
 HandleComFrame::HandleComFrame()
 {
 	RSPComFrameWorker* rsp_worker = new RSPComFrameWorker;
 	DataComFrameWorker* data_worker = new DataComFrameWorker;
+	
 	m_workers.insert({ rsp_worker->get_func_code(), rsp_worker });
 	m_workers.insert({ data_worker->get_func_code(), data_worker });
 }
@@ -72,6 +75,13 @@ HandleComFrame::~HandleComFrame()
 {
 	for (auto it : m_workers) {
 		free(it.second);
+	}
+}
+
+void HandleComFrame::set_ad(AutoDebussy* ad)
+{
+	for (auto it : m_workers) {
+		it.second->set_ad(ad);
 	}
 }
 

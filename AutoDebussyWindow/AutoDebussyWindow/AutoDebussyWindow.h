@@ -6,7 +6,6 @@
 class AutoDebussyWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
     AutoDebussyWindow(QWidget *parent = Q_NULLPTR);
 

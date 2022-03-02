@@ -13,7 +13,7 @@
 #include <qserialport.h>
 #include <QtSerialPort/QSerialPortInfo>
 
-using namespace tt::framework;
+// using namespace tt::framework;
 namespace senasic {
 namespace sw {
 namespace tt {

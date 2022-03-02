@@ -6,8 +6,6 @@
 
 using namespace senasic::sw::tt;
 
-namespace tt {
-namespace framework {
 
 InstrumentController::InstrumentController() {
 	m_sock.reset();
@@ -65,14 +63,14 @@ int AutoDebussy::init()
 	getAddressFromFile(Board_COM
 		, config_dir + "Board_COM.txt");
 
-	//N900_cf = config_dir + "N900_test_items.txt";
 	CMW500_cf = config_dir + "CMW500_test_items.txt";
 	Board_cf = config_dir + "Board_test_items.txt";
 	
-//	m_N900_ctl = new N900Controller(N900_cf, N900_ip, 5025);
 	m_CMW500_ctl = new CMW500Controller(CMW500_cf, CMW500_ip, 5025);
 	m_board_ctl = new BoardController(Board_cf, Board_COM);
-
+	
+	m_CMW500_ctl->set_ad(this);
+	m_board_ctl->set_ad(this);
 	return 0;
 }
 
@@ -130,8 +128,4 @@ int AutoDebussy::tpl_friday()
 		}
 	}
 	return 0;
-}
-
-
-}
 }

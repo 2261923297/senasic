@@ -41,7 +41,6 @@
 }
 
  void print_qbytearray(QByteArray qa) {
-	__logger_debug << "ByteArray:";
 	for (auto it : qa) { printf("0x%x, ", (unsigned char)it); }
 	printf("\n");
 }
