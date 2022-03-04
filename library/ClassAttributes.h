@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
 
+namespace tt {
+namespace attr {
+
 class Nocopyable {
 public:
 	Nocopyable() { }
@@ -12,29 +15,38 @@ private:
 
 	Nocopyable(const Nocopyable&) { }
 	Nocopyable(const Nocopyable&&) noexcept { }
+
+//	Nocopyable& operator=(const Nocopyable&) = delete;
+	
 }; // class Nocopyable
 
-
-class HandleError
+class ErrorHandler
 {
 public:
-	HandleError() { }
-	virtual ~HandleError() { }
+	ErrorHandler() { }
+	virtual ~ErrorHandler() { }
 protected:
-	virtual void handle() = 0;
+	virtual void deal(void* args) = 0;
 private:
 
 }; // class HandleError
 
-class LogError : public HandleError {
+struct LogErrorArgSt {
+	const char*		_msg;
+	std::ostream&	_out;
+}; // struct LogErrorArgSt
+
+class LogError : public ErrorHandler {
 public:
 	LogError() { }
-	void log(const char* msg, std::ostream& out = std::cout) { 
-		out << msg; 
-		handle();
+	virtual ~LogError() { }
+	virtual void deal(void* args) override {
+		LogErrorArgSt leas = *(LogErrorArgSt*)args;
+		leas._out << leas._msg << std::endl;
 	}
-protected:
-	virtual void handle() = 0;
 private:
 
 }; // class LogError
+
+} // namespace attr;
+} // namespace tt

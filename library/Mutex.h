@@ -1,17 +1,18 @@
 #pragma once
 
 #include "ClassAttributes.h"
-
 #include <mutex>
+
 namespace tt {
-
-
+namespace system {
 template <class Locker>
-class MutexImpl : Nocopyable
+class MutexImpl : public tt::attr::Nocopyable
 {
 public:
-	MutexImpl(Locker& locker) 
-		: m_locker(locker) { lock(); }
+	MutexImpl(Locker& locker)
+		: m_locker(locker) {
+		lock();
+	}
 	~MutexImpl() { unlock(); }
 
 	void lock() {
@@ -30,13 +31,13 @@ public:
 	StdMutex() {  }
 	~StdMutex() {  }
 
-	void lock() { m_mutex.lock();	}
+	void lock()	  { m_mutex.lock(); }
 	void unlock() { m_mutex.unlock(); }
 private:
 	std::mutex m_mutex;
 };
 
 
-
+} // namespace thread
 
 } // namespcae tt
