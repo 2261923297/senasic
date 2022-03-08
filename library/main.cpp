@@ -45,6 +45,7 @@ void test_std_thread() {
 			<< thrd_mutex_count << std::endl;
 }
 
+/*
 void test_thread_pool() {
 	tt::system::ThreadPool pool(4);
 	std::vector< std::future<int> > results;
@@ -64,7 +65,7 @@ void test_thread_pool() {
 		std::cout << result.get() << ' ';
 	std::cout << std::endl;
 }
-
+*/
 void test_std_move() {
 	std::string str = "Hello";
 	std::vector<std::string> v;
@@ -198,7 +199,26 @@ void test_condition_variable() {
 	
 }
 
-void test_std_feature();
+void test_std_feature() {
+
+}
+
+int i = 0;
+void task_func() {
+	printf("task_func_%d_beg!\n", i++);
+	Sleep(1000);
+	printf("task_func_end!\n");
+}
+
+void test_scheduler() {
+	int thread_num = 20;
+	tt::system::Scheduler scheduler(thread_num / 2);
+	for (int i = 0; i < 9; i++) {
+		scheduler.add_task({ task_func });
+	}
+	scheduler.init();
+//	scheduler.stop();
+}
 int main() {
 	
 //	test_std_thread();
@@ -208,5 +228,6 @@ int main() {
 //	test_change_file();
 //	test_timer();
 //	test_condition_variable();
-	test_std_feature();
+//	test_std_feature();
+	test_scheduler();
 }
